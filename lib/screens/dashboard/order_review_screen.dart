@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/customer.dart';
-import '../state/app_state.dart';
-import '../theme/app_theme.dart';
-import '../widgets/common.dart';
+import '../../models/customer.dart';
+import '../../state/app_state.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/common.dart';
 
 enum _SubmitState { idle, submitting }
 

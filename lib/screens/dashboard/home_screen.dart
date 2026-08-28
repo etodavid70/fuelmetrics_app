@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../state/app_state.dart';
+import '../../state/app_state.dart';
 import 'customer_list_screen.dart';
 import 'pending_orders_screen.dart';
 

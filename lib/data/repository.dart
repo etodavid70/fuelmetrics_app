@@ -4,7 +4,7 @@ import '../models/order.dart';
 import '../models/product.dart';
 import 'mock_data.dart';
 
-/// Thrown when the mock backend rejects / fails to receive a submission.
+///eto david: Exception is thrown when the mock API rejects or fails to receive a submission.
 class SubmissionException implements Exception {
   final String message;
   SubmissionException(this.message);
@@ -12,8 +12,7 @@ class SubmissionException implements Exception {
   String toString() => message;
 }
 
-/// Simulates a remote sales API. No real backend is used -- this stands in
-/// for what would normally be an HTTP client talking to a server.
+/// eto david: this simulates a remote sales API. No real backend is used as instructed
 abstract class SalesRepository {
   Future<List<Customer>> fetchCustomers();
   Future<List<Product>> fetchProducts();
@@ -21,8 +20,7 @@ abstract class SalesRepository {
 }
 
 class MockSalesRepository implements SalesRepository {
-  /// When true, every submission is forced to fail (simulating "no signal").
-  /// Toggled from the UI so graders can exercise the offline/pending flow.
+  
   bool forceOffline = false;
 
   final Random _random = Random();
@@ -48,16 +46,13 @@ class MockSalesRepository implements SalesRepository {
       throw SubmissionException('No network connection. Order saved locally.');
     }
 
-    // Simulate an unreliable connection / occasional server rejection:
-    // ~25% of submissions fail even when "online".
+    // eto david: this simulate an unreliable connection / occasional server rejection:
     final roll = _random.nextDouble();
     if (roll < 0.25) {
       throw SubmissionException(
         'Could not reach server. The order has been saved and will retry automatically.',
       );
     }
-
-    // Simulated success -- in a real app this would be an HTTP POST.
     return;
   }
 }

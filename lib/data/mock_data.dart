@@ -5,21 +5,21 @@ class MockData {
   static const List<Customer> customers = [
     Customer(
       id: 'c1',
-      name: 'Adaeze Okafor',
+      name: 'Eto David',
       location: 'Garki, Abuja',
       phone: '+234 803 111 2233',
       outstandingBalance: 45000,
     ),
     Customer(
       id: 'c2',
-      name: 'Musa Ibrahim',
+      name: 'Eto Samuel',
       location: 'Wuse II, Abuja',
       phone: '+234 806 222 3344',
       outstandingBalance: 0,
     ),
     Customer(
       id: 'c3',
-      name: 'Chinedu Eze',
+      name: 'Aisha Musa',
       location: 'Maitama, Abuja',
       phone: '+234 809 333 4455',
       outstandingBalance: 128500,

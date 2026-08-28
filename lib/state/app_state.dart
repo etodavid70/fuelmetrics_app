@@ -22,7 +22,7 @@ class AppState extends ChangeNotifier {
 
   bool isLoading = true;
 
-  /// Cart is keyed by productId so each product appears once with a quantity.
+  
   final Map<String, OrderLineItem> _cart = {};
   Customer? cartCustomer;
 
@@ -57,8 +57,9 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ---------------- Cart management ----------------
+  
 
+  //Eto David: this is to manage cart
   void startOrder(Customer customer) {
     cartCustomer = customer;
     _cart.clear();
@@ -108,11 +109,11 @@ class AppState extends ChangeNotifier {
     cartCustomer = null;
   }
 
-  // ---------------- Order submission ----------------
+  //Eto David: this is to manage orders
 
-  /// Attempts to submit the current cart as an order for [cartCustomer].
-  /// On failure, the order is persisted locally as "pendingSync".
-  /// Returns true if the order reached the server successfully.
+  /// Attempts to submit the current cart as an order
+  /// If it fails, the order is persisted(saved) locally as "pendingSync"
+  //It returns true if the order reaches the server successfully
   Future<bool> submitCurrentOrder() async {
     if (cartCustomer == null || _cart.isEmpty) return false;
 
@@ -130,7 +131,8 @@ class AppState extends ChangeNotifier {
     return success;
   }
 
-  /// Retries an already-pending order. Returns true if it now succeeded.
+  //Eto david: This is to retry orders that are aleady pending.
+  //it returns true if it is successful
   Future<bool> retryOrder(SalesOrder order) async {
     final success = await _trySubmit(order, isRetry: true);
     notifyListeners();
@@ -174,8 +176,10 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ---------------- Local persistence ----------------
+  
 
+
+//Eto David: this is for local storage, loads orders that are pending
   Future<void> _loadPendingOrders() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_pendingOrdersKey);
@@ -190,6 +194,7 @@ class AppState extends ChangeNotifier {
     }
   }
 
+//eto david: this is to save pending orders: in the case where the app is offline
   Future<void> _savePendingOrders() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = jsonEncode(pendingOrders.map((o) => o.toJson()).toList());

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/customer.dart';
-import '../models/product.dart';
-import '../state/app_state.dart';
-import '../theme/app_theme.dart';
-import '../widgets/common.dart';
+import '../../models/customer.dart';
+import '../../models/product.dart';
+import '../../state/app_state.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/common.dart';
 import 'order_review_screen.dart';
 
 class CreateOrderScreen extends StatefulWidget {
