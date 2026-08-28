@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fuelmetrics/screens/dashboard/home_screen.dart';
+import 'package:fuelmetrics/widgets/login_field.dart';
+import 'package:fuelmetrics/widgets/social_button.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -25,12 +28,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
+ void _login(){
+    if (!_formKey.currentState!.validate()) return;
+
+     Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          (route) => false,
+        );
+
+ }
 
   @override
   Widget build(BuildContext context) {
-    // React to auth state changes: navigate on success, show a snackbar on error.
-
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -96,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           key: _formKey,
                           child: Column(
                             children: [
-                              _LoginField(
+                              LoginField(
                                 controller: _emailController,
                                 hintText: 'Enter Your Email',
                                 keyboardType: TextInputType.emailAddress,
@@ -112,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                               ),
                               const SizedBox(height: 20),
-                              _LoginField(
+                              LoginField(
                                 controller: _passwordController,
                                 hintText: 'Enter Your Password',
                                 obscureText: _obscurePassword,
@@ -140,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
-                                  onPressed: () {},
+                                  onPressed: _login,
                                   style: TextButton.styleFrom(
                                     foregroundColor: Colors.white,
                                     padding: const EdgeInsets.only(top: 14),
@@ -194,13 +204,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  _SocialButton(
+                                  SocialButton(
                                     label: 'G',
                                     backgroundColor: Colors.white,
                                     foregroundColor: const Color(0xFF4285F4),
                                   ),
                                   const SizedBox(width: 24),
-                                  _SocialButton(
+                                  SocialButton(
                                     label: 'f',
                                     backgroundColor: const Color(0xFF1877F2),
                                     foregroundColor: Colors.white,
@@ -226,95 +236,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class _LoginField extends StatelessWidget {
-  const _LoginField({
-    required this.controller,
-    required this.hintText,
-    required this.prefixIcon,
-    required this.validator,
-    this.keyboardType = TextInputType.text,
-    this.obscureText = false,
-    this.suffixIcon,
-  });
 
-  final TextEditingController controller;
-  final String hintText;
-  final IconData prefixIcon;
-  final String? Function(String?) validator;
-  final TextInputType keyboardType;
-  final bool obscureText;
-  final Widget? suffixIcon;
 
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      obscureText: obscureText,
-      validator: validator,
-      style: const TextStyle(color: Color(0xFF3F3F3F)),
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: const TextStyle(color: Color(0xFF515151)),
-        prefixIcon: Icon(prefixIcon, color: const Color(0xFF262626)),
-        suffixIcon: suffixIcon,
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
-          borderSide: BorderSide(color: Colors.white, width: 2),
-        ),
-        errorBorder: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
-          borderSide: BorderSide(color: Colors.redAccent, width: 2),
-        ),
-      ),
-    );
-  }
-}
 
-class _SocialButton extends StatelessWidget {
-  const _SocialButton({
-    required this.label,
-    required this.backgroundColor,
-    required this.foregroundColor,
-  });
-
-  final String label;
-  final Color backgroundColor;
-  final Color foregroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 65,
-      height: 34,
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          foregroundColor: foregroundColor,
-          elevation: 0,
-          padding: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: label == 'f' ? 24 : 20,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    );
-  }
-}

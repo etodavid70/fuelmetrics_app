@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fuelmetrics/screens/auth/login.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/dashboard/home_screen.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
         title: 'Fuelmetrics',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
-        home: const HomeScreen(),
+        home: const LoginScreen(),
       ),
     );
   }
