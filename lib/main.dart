@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fuelmetrics/screens/auth/login.dart';
 import 'package:provider/provider.dart';
-
-import 'screens/dashboard/home_screen.dart';
 import 'state/app_state.dart';
 import 'theme/app_theme.dart';
 

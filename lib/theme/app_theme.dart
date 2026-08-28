@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color seed = Color(0xFF3D5AFE);
+  static const Color seed = Color(0xFF028db8);
   static const Color success = Color(0xFF2E9E5B);
   static const Color warning = Color(0xFFE0A11C);
-  static const Color danger = Color(0xFFD5473B);
+  static const Color danger = Color(0xFFbb0f1f);
+ 
 
   static ThemeData light() {
     final scheme = ColorScheme.fromSeed(seedColor: seed, brightness: Brightness.light);

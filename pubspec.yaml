@@ -7,8 +7,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
 # followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
+# Both the version and the builder number may be overridden by flutter build by specifying --build-name and --build-number, respectively.
 # In Android, build-name is used as versionName while build-number used as versionCode.
 # Read more about Android versioning at https://developer.android.com/studio/publish/versioning
 # In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
@@ -38,6 +37,24 @@ dependencies:
   shared_preferences: ^2.5.5
   uuid: ^4.6.0
   intl: ^0.20.3
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.8
+
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/launcher.jpg"
+
+flutter_native_splash:
+  color: "#FFFFFF" # Background color of your splash screen
+  image: "assets/launcher.jpg" # Your custom centered splash image
+  
+  # Crucial for Android 12+ to override the default launcher icon splash behavior
+  android_12:
+    color: "#FFFFFF"
+    image: "assets/launcher.jpg"
+
 
 dev_dependencies:
   flutter_test:
@@ -47,7 +64,7 @@ dev_dependencies:
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
+  # rules and the ones to activate in the `analysis_options.yaml` file.
   flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
@@ -62,9 +79,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

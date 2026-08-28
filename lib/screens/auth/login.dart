@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fuelmetrics/screens/dashboard/home_screen.dart';
+import 'package:fuelmetrics/theme/app_theme.dart';
 import 'package:fuelmetrics/widgets/login_field.dart';
 import 'package:fuelmetrics/widgets/social_button.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
- State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _pressed= false;
+  bool _pressed = false;
 
   @override
   void dispose() {
@@ -27,17 +27,31 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-
- void _login(){
+  void _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-     Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-          (route) => false,
-        );
+    setState(() => _pressed = true);
 
- }
+    try {
+      await Future.delayed(const Duration(milliseconds: 1000));
+      if (!mounted) return;
+      await Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() => _pressed = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,34 +72,44 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            IconButton(
-                              onPressed: () => Navigator.maybePop(context),
-                              icon: const Icon(Icons.chevron_left_rounded),
-                              iconSize: 38,
-                              color: _purple,
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                            ),
-                            Transform.translate(
-                              offset: const Offset(28, -36),
-                              child: const Text(
-                                'Welcome Back',
-                                style: TextStyle(
-                                  color: _purple,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w700,
+                            const SizedBox(height: 20),
+
+                            Row(
+                              children: [
+                                Text(
+                                  'FUEL',
+                                  style: TextStyle(
+                                    color: AppTheme.seed,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
+                                Text(
+                                  'METRICS',
+                                  style: TextStyle(
+                                    color: AppTheme.danger,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            Text(
+                              'Welcome Back...👋',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppTheme.danger,
                               ),
                             ),
-                            Transform.translate(
-                              offset: const Offset(30, -32),
-                              child: const Text(
-                                'Login to Continue.',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
+
+                            Text(
+                              'Login to continue..',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: AppTheme.seed,
                               ),
                             ),
                           ],
@@ -96,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         padding: const EdgeInsets.fromLTRB(62, 44, 62, 56),
                         decoration: const BoxDecoration(
-                          color: _purple,
+                          color: AppTheme.seed,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(98),
                             topRight: Radius.circular(98),
@@ -108,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               LoginField(
                                 controller: _emailController,
-                                hintText: 'Enter Your Email',
+                                hintText: 'Email',
                                 keyboardType: TextInputType.emailAddress,
                                 prefixIcon: Icons.mail_outline_rounded,
                                 validator: (value) {
@@ -124,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 20),
                               LoginField(
                                 controller: _passwordController,
-                                hintText: 'Enter Your Password',
+                                hintText: 'Password',
                                 obscureText: _obscurePassword,
                                 prefixIcon: Icons.lock_outline_rounded,
                                 suffixIcon: IconButton(
@@ -150,7 +174,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
-                                  onPressed: _login,
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Forgot password feature coming soon',
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   style: TextButton.styleFrom(
                                     foregroundColor: Colors.white,
                                     padding: const EdgeInsets.only(top: 14),
@@ -166,12 +198,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 width: double.infinity,
                                 height: 50,
                                 child: ElevatedButton(
-                                  onPressed: (){
-                                    _pressed=true;
-                                  },
+                                  onPressed: _pressed ? null : _login,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
-                                    foregroundColor: _purple,
+                                    foregroundColor: AppTheme.seed,
+                                    disabledBackgroundColor:
+                                        Colors.grey.shade300,
                                     elevation: 3,
                                     shape: const StadiumBorder(),
                                     textStyle: const TextStyle(
@@ -185,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           width: 22,
                                           child: CircularProgressIndicator(
                                             strokeWidth: 2.5,
-                                            color: _purple,
+                                            color: AppTheme.seed,
                                           ),
                                         )
                                       : const Text('Login'),
@@ -218,8 +250,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ],
                               ),
                               const SizedBox(height: 26),
-                             
-                            
                             ],
                           ),
                         ),
@@ -235,7 +265,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-
-
-
