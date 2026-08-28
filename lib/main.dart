@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fuelmetrics/screens/auth/login.dart';
 import 'package:provider/provider.dart';
+import 'services/connectivity_service.dart';
 import 'state/app_state.dart';
 import 'theme/app_theme.dart';
 
@@ -13,8 +14,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppState()..init(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ConnectivityService()),
+        ChangeNotifierProvider(create: (_) => AppState()..init()),
+      ],
       child: MaterialApp(
         title: 'Fuelmetrics',
         debugShowCheckedModeBanner: false,

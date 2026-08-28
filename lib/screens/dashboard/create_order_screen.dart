@@ -117,15 +117,20 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   }
 }
 
-class _ProductTile extends StatelessWidget {
+class _ProductTile extends StatefulWidget {
   final Product product;
   const _ProductTile({required this.product});
 
   @override
+  State<_ProductTile> createState() => _ProductTileState();
+}
+
+class _ProductTileState extends State<_ProductTile> {
+  @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final qty = appState.quantityInCart(product.id);
-    final outOfStock = product.availableQty == 0;
+    final qty = appState.quantityInCart(widget.product.id);
+    final outOfStock = widget.product.availableQty == 0;
 
     return Card(
       child: Padding(
@@ -146,12 +151,12 @@ class _ProductTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                  Text(widget.product.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
                   const SizedBox(height: 4),
-                  Text(formatNaira(product.price), style: TextStyle(color: Colors.grey.shade700, fontSize: 13)),
+                  Text(formatNaira(widget.product.price), style: TextStyle(color: Colors.grey.shade700, fontSize: 13)),
                   const SizedBox(height: 4),
                   Text(
-                    outOfStock ? 'Out of stock' : '${product.availableQty} available',
+                    outOfStock ? 'Out of stock' : '${widget.product.availableQty} available',
                     style: TextStyle(
                       color: outOfStock ? AppTheme.danger : Colors.grey.shade500,
                       fontSize: 11.5,
@@ -167,11 +172,11 @@ class _ProductTile extends StatelessWidget {
             else if (qty == 0)
               OutlinedButton(
                 style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
-                onPressed: () => appState.addToCart(product),
+                onPressed: () => appState.addToCart(widget.product),
                 child: const Text('Add'),
               )
             else
-              _QuantityStepper(product: product, quantity: qty),
+              _QuantityStepper(product: widget.product, quantity: qty),
           ],
         ),
       ),
@@ -186,7 +191,7 @@ class _QuantityStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.read<AppState>();
+    final appState = context.watch<AppState>();
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.seed.withOpacity(0.08),

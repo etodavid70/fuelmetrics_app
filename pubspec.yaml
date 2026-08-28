@@ -38,7 +38,8 @@ dependencies:
   uuid: ^4.6.0
   intl: ^0.20.3
   flutter_launcher_icons: ^0.14.4
-  flutter_native_splash: ^2.4.8
+  flutter_native_splash: ^2.4.7
+  connectivity_plus: ^6.0.0
 
 
 flutter_launcher_icons:

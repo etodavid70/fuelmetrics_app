@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/customer.dart';
+import '../../services/connectivity_service.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
@@ -20,6 +21,10 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
+    final connectivityService = context.watch<ConnectivityService>();
+    
+    // Determine offline status: real connectivity OR manual override
+    final isOffline = !connectivityService.isOnline || appState.simulateOffline;
 
     if (appState.isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -36,7 +41,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
         title: const Text('Customers'),
         actions: [
           IconButton(
-            tooltip: appState.simulateOffline ? 'Offline mode ON' : 'Simulate offline',
+            tooltip: appState.simulateOffline ? 'Manual offline mode ON' : 'Toggle manual offline',
             onPressed: () => appState.simulateOffline = !appState.simulateOffline,
             icon: Icon(
               appState.simulateOffline ? Icons.wifi_off : Icons.wifi,
@@ -47,19 +52,25 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
       ),
       body: Column(
         children: [
-          if (appState.simulateOffline)
+          if (isOffline)
             Container(
               width: double.infinity,
               color: AppTheme.danger.withOpacity(0.1),
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: Row(
-                children: const [
-                  Icon(Icons.wifi_off, size: 16, color: AppTheme.danger),
-                  SizedBox(width: 8),
+                children: [
+                  const Icon(Icons.wifi_off, size: 16, color: AppTheme.danger),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Offline mode is simulated. Submissions will be saved as Pending.',
-                      style: TextStyle(fontSize: 12, color: AppTheme.danger, fontWeight: FontWeight.w600),
+                      appState.simulateOffline
+                          ? 'Manual offline mode is ON. Submissions will be saved as Pending.'
+                          : 'No internet connection. Submissions will be saved as Pending.',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.danger,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],

@@ -21,20 +21,21 @@ class AppState extends ChangeNotifier {
   List<SalesOrder> pendingOrders = [];
 
   bool isLoading = true;
+  bool _forceManualOfflineMode = false;
 
-  
   final Map<String, OrderLineItem> _cart = {};
   Customer? cartCustomer;
 
-  bool get simulateOffline =>
-      repository is MockSalesRepository && (repository as MockSalesRepository).forceOffline;
+  /// Returns true if should be treated as offline (either real connectivity down or manual override)
+  bool get isOffline => _forceManualOfflineMode;
 
+  /// Toggle manual offline simulation (overrides real connectivity)
   set simulateOffline(bool value) {
-    if (repository is MockSalesRepository) {
-      (repository as MockSalesRepository).forceOffline = value;
-      notifyListeners();
-    }
+    _forceManualOfflineMode = value;
+    notifyListeners();
   }
+
+  bool get simulateOffline => _forceManualOfflineMode;
 
   List<OrderLineItem> get cartItems => _cart.values.toList();
   int get cartItemCount => _cart.values.fold(0, (sum, i) => sum + i.quantity);
@@ -56,8 +57,6 @@ class AppState extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
-
-  
 
   //Eto David: this is to manage cart
   void startOrder(Customer customer) {
@@ -110,10 +109,8 @@ class AppState extends ChangeNotifier {
   }
 
   //Eto David: this is to manage orders
-
-  /// Attempts to submit the current cart as an order
-  /// If it fails, the order is persisted(saved) locally as "pendingSync"
-  //It returns true if the order reaches the server successfully
+  // Attempts to submit the current cart as an order. If it fails, the order is persisted(saved) locally as "pendingSync"
+  
   Future<bool> submitCurrentOrder() async {
     if (cartCustomer == null || _cart.isEmpty) return false;
 
@@ -131,7 +128,7 @@ class AppState extends ChangeNotifier {
     return success;
   }
 
-  //Eto david: This is to retry orders that are aleady pending.
+  //Eto david: This is to retry orders that are aleary pending.
   //it returns true if it is successful
   Future<bool> retryOrder(SalesOrder order) async {
     final success = await _trySubmit(order, isRetry: true);
@@ -176,10 +173,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  
-
-
-//Eto David: this is for local storage, loads orders that are pending
+  //Eto David: this is for local storage, loads orders that are pending
   Future<void> _loadPendingOrders() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_pendingOrdersKey);
@@ -194,7 +188,7 @@ class AppState extends ChangeNotifier {
     }
   }
 
-//eto david: this is to save pending orders: in the case where the app is offline
+  //eto david: this is to save pending orders: in the case where the app is offline
   Future<void> _savePendingOrders() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = jsonEncode(pendingOrders.map((o) => o.toJson()).toList());

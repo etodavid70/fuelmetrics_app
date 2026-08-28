@@ -153,6 +153,10 @@ class _OrderReviewScreenState extends State<OrderReviewScreen> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                 child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.seed,
+                  foregroundColor: Colors.white
+                ),
                   onPressed: submitting ? null : _submit,
                   child: submitting
                       ? const SizedBox(
@@ -193,6 +197,7 @@ class _ResultDialog extends StatelessWidget {
       actions: [
         Center(
           child: TextButton(
+            
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('OK'),
           ),

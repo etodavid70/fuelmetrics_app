@@ -70,6 +70,10 @@ class CustomerDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.seed,
+              foregroundColor: Colors.white
+            ),
             onPressed: () {
               context.read<AppState>().startOrder(customer);
               Navigator.of(context).push(

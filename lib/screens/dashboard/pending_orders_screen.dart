@@ -125,6 +125,10 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.seed,
+                                  foregroundColor: Colors.white
+                                ),
                                 onPressed: isRetrying ? null : () => _retry(order),
                                 icon: isRetrying
                                     ? const SizedBox(
