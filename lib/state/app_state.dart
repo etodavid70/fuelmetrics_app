@@ -7,14 +7,18 @@ import '../data/repository.dart';
 import '../models/customer.dart';
 import '../models/order.dart';
 import '../models/product.dart';
+import '../services/connectivity_service.dart';
 
 const _pendingOrdersKey = 'pending_orders_v1';
 const _uuid = Uuid();
 
 class AppState extends ChangeNotifier {
-  AppState({SalesRepository? repository}) : repository = repository ?? MockSalesRepository();
+  AppState({SalesRepository? repository, ConnectivityService? connectivityService})
+      : repository = repository ?? MockSalesRepository(),
+        connectivityService = connectivityService ?? ConnectivityService();
 
   final SalesRepository repository;
+  final ConnectivityService connectivityService;
 
   List<Customer> customers = [];
   List<Product> products = [];
@@ -26,10 +30,10 @@ class AppState extends ChangeNotifier {
   final Map<String, OrderLineItem> _cart = {};
   Customer? cartCustomer;
 
-  /// Returns true if should be treated as offline (either real connectivity down or manual override)
+
   bool get isOffline => _forceManualOfflineMode;
 
-  /// Toggle manual offline simulation (overrides real connectivity)
+
   set simulateOffline(bool value) {
     _forceManualOfflineMode = value;
     notifyListeners();
@@ -58,7 +62,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  //Eto David: this is to manage cart
+ 
   void startOrder(Customer customer) {
     cartCustomer = customer;
     _cart.clear();
@@ -108,8 +112,6 @@ class AppState extends ChangeNotifier {
     cartCustomer = null;
   }
 
-  //Eto David: this is to manage orders
-  // Attempts to submit the current cart as an order. If it fails, the order is persisted(saved) locally as "pendingSync"
   
   Future<bool> submitCurrentOrder() async {
     if (cartCustomer == null || _cart.isEmpty) return false;
@@ -128,8 +130,7 @@ class AppState extends ChangeNotifier {
     return success;
   }
 
-  //Eto david: This is to retry orders that are aleary pending.
-  //it returns true if it is successful
+
   Future<bool> retryOrder(SalesOrder order) async {
     final success = await _trySubmit(order, isRetry: true);
     notifyListeners();
@@ -137,6 +138,18 @@ class AppState extends ChangeNotifier {
   }
 
   Future<bool> _trySubmit(SalesOrder order, {bool isRetry = false}) async {
+    // Check connectivity status first
+    if (!connectivityService.isOnline) {
+      order.status = OrderStatus.pendingSync;
+      order.lastError = 'No internet connection. Order saved locally.';
+      order.retryCount += 1;
+      if (!pendingOrders.any((o) => o.id == order.id)) {
+        pendingOrders.insert(0, order);
+      }
+      await _savePendingOrders();
+      return false;
+    }
+
     try {
       await repository.submitOrder(order);
       order.status = OrderStatus.submitted;
@@ -173,7 +186,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  //Eto David: this is for local storage, loads orders that are pending
+  
   Future<void> _loadPendingOrders() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_pendingOrdersKey);
@@ -188,7 +201,6 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  //eto david: this is to save pending orders: in the case where the app is offline
   Future<void> _savePendingOrders() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = jsonEncode(pendingOrders.map((o) => o.toJson()).toList());

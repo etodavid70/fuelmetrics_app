@@ -12,7 +12,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static const _purple = Color(0xFF8B63ED);
+  
 
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();

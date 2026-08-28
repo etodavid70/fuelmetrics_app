@@ -52,85 +52,108 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     subtitle: 'Try a different search term.',
                   )
                 : ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 120),
-                    itemCount: filtered.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (context, i) => _ProductTile(product: filtered[i]),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                    itemCount: filtered.length + (appState.cartItemCount > 0 ? 1 : 0),
+                    separatorBuilder: (_, i) {
+                      if (i == filtered.length) return const SizedBox.shrink();
+                      return const SizedBox(height: 10);
+                    },
+                    itemBuilder: (context, i) {
+                      if (i == filtered.length) {
+                        return Container(
+                          margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1B1D29),
+                            borderRadius: BorderRadius.circular(18),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.18),
+                                blurRadius: 16,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${appState.cartItemCount} item${appState.cartItemCount == 1 ? '' : 's'}',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade300,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatNaira(appState.cartTotal),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Spacer(),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.seed,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => OrderReviewScreen(
+                                        customer: widget.customer,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('Review Order'),
+                                    SizedBox(width: 6),
+                                    Icon(Icons.arrow_forward, size: 18),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      final product = filtered[i];
+                      return _ProductTile(key: ValueKey(product.id), product: product);
+                    },
                   ),
           ),
         ],
       ),
-      bottomNavigationBar: appState.cartItemCount == 0
-          ? null
-          : SafeArea(
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1B1D29),
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.18), blurRadius: 16, offset: const Offset(0, 6)),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${appState.cartItemCount} item${appState.cartItemCount == 1 ? '' : 's'}',
-                          style: TextStyle(color: Colors.grey.shade300, fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          formatNaira(appState.cartTotal),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 17),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.seed,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => OrderReviewScreen(customer: widget.customer)),
-                        );
-                      },
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Review Order'),
-                          SizedBox(width: 6),
-                          Icon(Icons.arrow_forward, size: 18),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
     );
   }
 }
 
-class _ProductTile extends StatefulWidget {
+
+class _ProductTile extends StatelessWidget {
   final Product product;
-  const _ProductTile({required this.product});
 
-  @override
-  State<_ProductTile> createState() => _ProductTileState();
-}
+  const _ProductTile({
+    super.key,
+    required this.product,
+  });
 
-class _ProductTileState extends State<_ProductTile> {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
-    final qty = appState.quantityInCart(widget.product.id);
-    final outOfStock = widget.product.availableQty == 0;
+    final qty = appState.quantityInCart(product.id);
+    final outOfStock = product.availableQty == 0;
 
     return Card(
       child: Padding(
@@ -144,39 +167,78 @@ class _ProductTileState extends State<_ProductTile> {
                 color: AppTheme.seed.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.inventory_2_outlined, color: AppTheme.seed),
+              child: const Icon(
+                Icons.inventory_2_outlined,
+                color: AppTheme.seed,
+              ),
             ),
+
             const SizedBox(width: 12),
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.product.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                  const SizedBox(height: 4),
-                  Text(formatNaira(widget.product.price), style: TextStyle(color: Colors.grey.shade700, fontSize: 13)),
-                  const SizedBox(height: 4),
                   Text(
-                    outOfStock ? 'Out of stock' : '${widget.product.availableQty} available',
+                    product.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    formatNaira(product.price),
                     style: TextStyle(
-                      color: outOfStock ? AppTheme.danger : Colors.grey.shade500,
+                      color: Colors.grey.shade700,
+                      fontSize: 13,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    outOfStock
+                        ? 'Out of stock'
+                        : '${
+                            product.availableQty
+                          } available',
+                    style: TextStyle(
+                      color: outOfStock
+                          ? AppTheme.danger
+                          : Colors.grey.shade500,
                       fontSize: 11.5,
-                      fontWeight: outOfStock ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight: outOfStock
+                          ? FontWeight.w700
+                          : FontWeight.w500,
                     ),
                   ),
                 ],
               ),
             ),
+
             const SizedBox(width: 8),
-            if (outOfStock)
-              const SizedBox.shrink()
-            else if (qty == 0)
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10)),
-                onPressed: () => appState.addToCart(widget.product),
-                child: const Text('Add'),
-              )
-            else
-              _QuantityStepper(product: widget.product, quantity: qty),
+
+            if (!outOfStock)
+              qty == 0
+                  ? OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                      ),
+                      onPressed: () {
+                        appState.addToCart(product);
+                      },
+                      child: const Text('Add'),
+                    )
+                  : _QuantityStepper(
+                      product: product,
+                      quantity: qty,
+                    ),
           ],
         ),
       ),
@@ -184,14 +246,20 @@ class _ProductTileState extends State<_ProductTile> {
   }
 }
 
+
 class _QuantityStepper extends StatelessWidget {
   final Product product;
   final int quantity;
-  const _QuantityStepper({required this.product, required this.quantity});
+
+  const _QuantityStepper({
+    required this.product,
+    required this.quantity,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.watch<AppState>();
+    final appState = context.read<AppState>();
+
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.seed.withOpacity(0.08),
@@ -202,22 +270,150 @@ class _QuantityStepper extends StatelessWidget {
         children: [
           IconButton(
             visualDensity: VisualDensity.compact,
-            icon: const Icon(Icons.remove, size: 18),
+            padding: const EdgeInsets.all(6),
+            constraints: const BoxConstraints(
+              minWidth: 32,
+              minHeight: 32,
+            ),
+            icon: const Icon(
+              Icons.remove,
+              size: 18,
+            ),
             color: AppTheme.seed,
-            onPressed: () => appState.addToCart(product, quantity: -1),
+            onPressed: () {
+              appState.addToCart(
+                product,
+                quantity: -1,
+              );
+            },
           ),
-          SizedBox(
-            width: 22,
-            child: Text('$quantity', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700)),
+
+          GestureDetector(
+            onTap: () {
+              _showQuantityDialog(
+                context,
+                product,
+                quantity,
+              );
+            },
+            child: Container(
+              constraints: const BoxConstraints(
+                minWidth: 30,
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 4,
+              ),
+              child: Text(
+                '$quantity',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ),
           ),
+
           IconButton(
             visualDensity: VisualDensity.compact,
-            icon: const Icon(Icons.add, size: 18),
+            padding: const EdgeInsets.all(6),
+            constraints: const BoxConstraints(
+              minWidth: 32,
+              minHeight: 32,
+            ),
+            icon: const Icon(
+              Icons.add,
+              size: 18,
+            ),
             color: AppTheme.seed,
-            onPressed: quantity >= product.availableQty ? null : () => appState.addToCart(product, quantity: 1),
+            onPressed: quantity >= product.availableQty
+                ? null
+                : () {
+                    appState.addToCart(
+                      product,
+                      quantity: 1,
+                    );
+                  },
           ),
         ],
       ),
+    );
+  }
+
+  void _showQuantityDialog(
+    BuildContext context,
+    Product product,
+    int currentQuantity,
+  ) {
+    final controller = TextEditingController(
+      text: currentQuantity.toString(),
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(
+            'Quantity for ${product.name}',
+          ),
+
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: 'Quantity',
+              hintText: 'Enter quantity',
+              helperText:
+                  'Available: ${product.availableQty}',
+            ),
+          ),
+
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Cancel'),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                final enteredQuantity =
+                    int.tryParse(controller.text);
+
+                if (enteredQuantity == null ||
+                    enteredQuantity < 1) {
+                  return;
+                }
+
+                if (enteredQuantity >
+                    product.availableQty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Only ${product.availableQty} units are available.',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                final appState =
+                    context.read<AppState>();
+
+                appState.setQuantity(
+                  product,
+                  enteredQuantity,
+                );
+
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Update'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

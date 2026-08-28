@@ -23,7 +23,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
     final appState = context.watch<AppState>();
     final connectivityService = context.watch<ConnectivityService>();
     
-    // Determine offline status: real connectivity OR manual override
+
     final isOffline = !connectivityService.isOnline || appState.simulateOffline;
 
     if (appState.isLoading) {
@@ -41,7 +41,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
         title: const Text('Customers'),
         actions: [
           IconButton(
-            tooltip: appState.simulateOffline ? 'Manual offline mode ON' : 'Toggle manual offline',
+            tooltip: appState.simulateOffline ? 'offline mode ON' : 'Toggle manual offline',
             onPressed: () => appState.simulateOffline = !appState.simulateOffline,
             icon: Icon(
               appState.simulateOffline ? Icons.wifi_off : Icons.wifi,
@@ -64,7 +64,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                   Expanded(
                     child: Text(
                       appState.simulateOffline
-                          ? 'Manual offline mode is ON. Submissions will be saved as Pending.'
+                          ? 'offline mode is ON. Submissions will be saved as Pending.'
                           : 'No internet connection. Submissions will be saved as Pending.',
                       style: const TextStyle(
                         fontSize: 12,
